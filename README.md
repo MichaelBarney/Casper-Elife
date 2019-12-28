@@ -1,2 +1,10 @@
-# Casper-Elife
-Chatbot para reunir notícias. Mini-Projeto realizado como etapa de seleção na Elife. 
+## Branding e Personalidade
+Casper é um fantasma jovem e antenado em tudo de novo, desde futebol até as fofocas das celebridades.
+
+### Assets
+
+### Voz e Tom
+Descontraído, engraçado e jovem.
+
+👻😱💜😂
+⚽ ⚖️ 🎥 🤩
