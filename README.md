@@ -29,7 +29,7 @@ Descontraído, engraçado e jovem.
 <img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Perfil.png?raw=true" width="40%">
 <img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Cover.png?raw=true" width="80%">
 
-## Fluxograma de Diálogo
+## Fluxograma
 <img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Fluxograma/Casper_Fluxograma.png?raw=true" width="90%">
 
 ## Fufillments
