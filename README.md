@@ -1,6 +1,6 @@
 # Casper-Elife
 
-Chatbot para reunir notícias. Mini-Projeto realizado como etapa de seleção na Elife.
+Chatbot para reunir notícias. Mini-Projeto realizado como etapa do processo seletivo da empresa Elife.
 
 [**Link para conversar com Casper** ](http://www.m.me/casper.noticias)
 
