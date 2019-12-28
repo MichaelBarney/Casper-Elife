@@ -42,7 +42,7 @@ Para preencher o banco de dados, foi implementada uma Firebase Function agendada
 
 Para coletar notícias, esta função faz chamadas à [News API](https://newsapi.org/) passando parâmetros para garantir notícias em português e do tema selecionado.
 
-Em seguida, a função conecta ao banco de dados e o preenche com as notícias de maneira à ser utilizada posteriormente pela função de Webhook do Dialogflow.
+Em seguida, a função conecta ao banco de dados e o preenche com as informações das notícias para que possam ser utilizadas posteriormente pela função de Webhook do Dialogflow.
 
 Além disto, foi observado que algumas URLs estavam entrando em conflito com o Facebook Messenger, como as notícias do website InfoMoney. Assim, foi implementado uma função para minificar as URLs das fontes das notícias utilizando a API do [Rebrandly](https://api.rebrandly.com).
 
