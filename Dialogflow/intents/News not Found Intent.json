@@ -1,0 +1,50 @@
+{
+  "id": "d8092fd1-3139-4707-b801-229f172f9f2e",
+  "name": "News not Found Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "pt-br",
+          "condition": "",
+          "title": "Mas que tal escolher outro?",
+          "replies": [
+            "⚽ Esportes",
+            "⚖️ Política",
+            "🎥 Entretenimento",
+            "🤩 Famosos"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "pt-br",
+          "condition": "",
+          "speech": "Oh não 😱, encontrei nenhuma notícia sobre este tema!"
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "no_news_found"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

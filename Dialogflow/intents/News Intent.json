@@ -1,0 +1,75 @@
+{
+  "id": "ea531c89-c6d0-41e2-9edd-d56ffe7a4313",
+  "name": "News Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "51106b46-47c9-409b-970c-1fed9e32a034",
+          "required": false,
+          "dataType": "@theme",
+          "name": "theme",
+          "value": "$theme",
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": [],
+          "isList": false
+        }
+      ],
+      "messages": [
+        {
+          "type": 0,
+          "platform": "facebook",
+          "lang": "pt-br",
+          "condition": "",
+          "speech": "Estas são as notícias de $theme que encontrei:"
+        },
+        {
+          "type": 1,
+          "platform": "facebook",
+          "lang": "pt-br",
+          "condition": "",
+          "title": "Uma Notícia",
+          "subtitle": "Sua Descrição",
+          "imageUrl": "https://m.extra.globo.com/incoming/2446068-75d-e0a/w488h275-PROP/flyingcow.jpg",
+          "buttons": [
+            {
+              "text": "Ver Notícia",
+              "postback": "https://www.google.com/"
+            }
+          ]
+        },
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "pt-br",
+          "condition": "",
+          "title": "Você quer ver mais notícias?",
+          "replies": [
+            "⚽ Esportes",
+            "⚖️ Política",
+            "🎥 Entretenimento",
+            "🤩 Famosos"
+          ]
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

@@ -1,0 +1,60 @@
+{
+  "id": "05afa36f-42ca-4528-83f3-84b152e8ad1d",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "show_menu_action",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": 2,
+          "platform": "facebook",
+          "lang": "pt-br",
+          "condition": "",
+          "title": "Qual tipo de notícia você quer ver?",
+          "replies": [
+            "⚽ Esportes",
+            "⚖️ Política",
+            "🎥 Entretenimento",
+            "🤩 Famosos"
+          ]
+        },
+        {
+          "type": 0,
+          "lang": "pt-br",
+          "condition": "",
+          "speech": "Oi, eu sou o Casper! 👻"
+        },
+        {
+          "type": 0,
+          "lang": "pt-br",
+          "condition": "",
+          "speech": "Perambulando pelo mundo, todo dia descubro as notícias mais novas, desde o último lance no futebol até a mais nova fofoca no mundo dos famosos! 💜"
+        }
+      ],
+      "defaultResponsePlatforms": {
+        "facebook": true
+      },
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    },
+    {
+      "name": "FACEBOOK_WELCOME"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

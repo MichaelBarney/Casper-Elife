@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ea4cefce-6f4e-47f2-a6a9-18cc28c44851",
+    "data": [
+      {
+        "text": "🤩 ",
+        "userDefined": false
+      },
+      {
+        "text": "Famosos",
+        "alias": "theme",
+        "meta": "@theme",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  },
+  {
+    "id": "443d45db-4a25-4934-a18c-9f29a127b8a2",
+    "data": [
+      {
+        "text": "esportes",
+        "alias": "theme",
+        "meta": "@theme",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "updated": 0
+  }
+]

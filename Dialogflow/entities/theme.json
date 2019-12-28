@@ -1,0 +1,9 @@
+{
+  "id": "474ac8fa-8d70-499c-bf4a-58d6a5a54409",
+  "name": "theme",
+  "isOverridable": true,
+  "isEnum": false,
+  "isRegexp": false,
+  "automatedExpansion": false,
+  "allowFuzzyExtraction": false
+}
