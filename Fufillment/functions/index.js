@@ -72,7 +72,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
      * @param {string} theme - O tema das notícias à serem pesquisadas
      */
     async function getNewsFromDB(theme){
-        const client = await MongoClient.connect(process.env.MONGO_URI, { useNewUrlParser: true })
+        const client = await MongoClient.connect(functions.config().mongodb.uri, { useNewUrlParser: true })
         .catch(err => { console.log(err); });
 
         if (!client) {
@@ -102,7 +102,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
     .timeZone('America/Sao_Paulo')
     .onRun(async () => {  
 
-    const client = await MongoClient.connect(process.env.MONGO_URI, { useNewUrlParser: true })
+    const client = await MongoClient.connect(functions.config().mongodb.uri, { useNewUrlParser: true })
     .catch(err => { console.log(err); });
 
     if (!client) {
@@ -164,7 +164,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
      * @param {String} theme  - O tema da notícia à ser pesquisada.
      */
     async function getNews(theme){
-        var url = "https://newsapi.org/v2/everything?q="+theme.replace("í","i")+"&sortBy=publishedAt&language=pt&apiKey=" + process.env.NEWS_API_KEY;
+        var url = "https://newsapi.org/v2/everything?q="+theme.replace("í","i")+"&sortBy=publishedAt&language=pt&apiKey=" + functions.config().newsapi.key;
         try {
             const response = await fetch(url);
             const json = await response.json();
@@ -181,7 +181,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
      * @returns {String}
      */
     async function minifyURL(longURL){
-        let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey="+process.env.REBRANDLY_API_KEY;
+        let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey="+functions.config().rebrandly.key;
         try {
             const response = await fetch(queryURL);
             const json = await response.json();
