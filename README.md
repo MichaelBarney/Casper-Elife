@@ -19,15 +19,15 @@ exibir o menu de temas novamente.
 ## Branding e Personalidade
 Casper é um fantasma jovem e antenado em tudo de novo, desde futebol até as fofocas das celebridades.
 
-### Assets
-<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Perfil.png?raw=true" width="40%">
-<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Cover.png?raw=true" width="80%">
-
 ### Voz e Tom
 Descontraído, engraçado e jovem.
 
 👻😱💜😂
 ⚽ ⚖️ 🎥 🤩
+
+### Assets
+<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Perfil.png?raw=true" width="40%">
+<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Cover.png?raw=true" width="80%">
 
 ## Fluxograma de Diálogo
 <img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Fluxograma/Casper_Fluxograma.png?raw=true" width="90%">
