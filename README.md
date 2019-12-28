@@ -20,10 +20,29 @@ exibir o menu de temas novamente.
 Casper é um fantasma jovem e antenado em tudo de novo, desde futebol até as fofocas das celebridades.
 
 ### Assets
-![Foto de Perfil do Casper](https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Perfil.png?raw=true | width=50)
+<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Perfil.png?raw=true" width="40%">
+<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Assets/Casper_Cover.png?raw=true" width="80%">
 
 ### Voz e Tom
 Descontraído, engraçado e jovem.
 
 👻😱💜😂
 ⚽ ⚖️ 🎥 🤩
+
+## Fluxograma de Diálogo
+<img src="https://github.com/MichaelBarney/Casper-Elife/blob/master/Fluxograma/Casper_Fluxograma.png?raw=true" width="90%">
+
+## Fufillments
+O chatbot foi feito utilizando um agente do Dialogflow diretamente integrado com o Facebook Messenger. Desta maneira, para fazer solicitações ao banco de dados de notícias foi necessário um Webhook de fufillments.
+
+Assim, foi implementado uma Firebase Function, [encontrada aqui](https://github.com/MichaelBarney/Casper-Elife/blob/master/Fufillment/functions/index.js), para receber a chamada, fazer a solicitação ao banco de dados e retornar um carrousel com as notícias do tema escolhido.
+
+## Preenchimento do Bando de Dados
+Para preencher o banco de dados, foi implementada uma Firebase Function agendada para executar diariamente às 00:01, [encontrada aqui](https://github.com/MichaelBarney/Casper-Elife/blob/master/Fufillment/functions/index.js).
+
+Para coletar notícias, esta função faz chamadas à [News API](https://newsapi.org/) passando parâmetros para garantir notícias em português e do tema selecionado.
+
+Em seguida, a função conecta ao banco de dados e o preenche com as notícias de maneira à ser utilizada posteriormente pela função de Webhook do Dialogflow.
+
+Além disto, foi observado que algumas URLs estavam entrando em conflito com o Facebook Messenger, como as notícias do website InfoMoney. Assim, foi implementado uma função para minificar as URLs das fontes das notícias utilizando a API do [Rebrandly](https://api.rebrandly.com).
+
