@@ -10,8 +10,11 @@ const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
 const MongoClient = require('mongodb').MongoClient;
 var fetch = require("node-fetch");
+var probe = require('probe-image-size');
 process.env.DEBUG = 'dialogflow:debug';
  
+
+
 /**
  *  Firebase Funcion
  *  Chamada após receber um Request do Dialogflow na URL específicada.
@@ -138,12 +141,24 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
 
         for (let theme of themes){
             const news = await getNews(theme)
+            
             for (let i in  news.articles){
                 if(i < 10){
                     let article = news.articles[i];
+
+                    var imageUrl = article.urlToImage
+   
+                    // Imagens grandes travam o messenger
+                    let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
+                    let size = dimensions.width * dimensions.height;
+                    console.log(size);
+                    if (size > 1000000){
+                        imageUrl = ""
+                    }
+
                     result.push({
                         title: article.title,
-                        imageUrl: article.urlToImage,
+                        imageUrl: imageUrl,
                         description: article.description,
                         link: await minifyURL(article.url),
                         theme: theme

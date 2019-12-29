@@ -2,6 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://elife:elife@cluster0-rojfb.gcp.mongodb.net/test?retryWrites=true&w=majority";
 
 var fetch = require("node-fetch");
+var probe = require('probe-image-size');
 
 myFunc();
 
@@ -36,17 +37,26 @@ async function myFunc(){
         var result = [];
 
         for (let theme of themes){
-            console.log("******"+theme+"**********")
             const news = await getNews(theme)
+            
             for (let i in  news.articles){
                 if(i < 10){
                     let article = news.articles[i];
-                    console.log("title: " + article.title)
+
+                    var imageUrl = article.urlToImage
+   
+                    let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
+                    let size = dimensions.width * dimensions.height;
+                    console.log(size);
+                    if (size > 1000000){
+                        imageUrl = ""
+                    }
+
                     result.push({
                         title: article.title,
-                        imageUrl: article.urlToImage,
+                        imageUrl: imageUrl,
                         description: article.description,
-                        link: await getURL(article.url),
+                        link: await minifyURL(article.url),
                         theme: theme
                     })
                 }
@@ -59,7 +69,7 @@ async function myFunc(){
         return result;
     }
 
-    async function getURL(longURL){
+    async function minifyURL(longURL){
         let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey=c95033066865402eb6d1dc40a4c4547f";
         try {
             const response = await fetch(queryURL);
