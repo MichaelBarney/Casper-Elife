@@ -139,6 +139,10 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
 
         var result = [];
 
+        // Primeiro, remover os links que foram minificados previamente
+        deleteAll()
+
+        // Em seguida, preencher 'result' com objetos representando as notícias
         for (let theme of themes){
             const news = await getNews(theme)
             
@@ -148,7 +152,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
 
                     var imageUrl = article.urlToImage
    
-                    // Imagens grandes travam o messenger
+                    // Imagens grandes travam o messenger, então é ncesessário verificar seu tamanho antes de adicionála.
                     let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
                     let size = dimensions.width * dimensions.height;
                     console.log(size);
@@ -160,7 +164,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
                         title: article.title,
                         imageUrl: imageUrl,
                         description: article.description,
-                        link: await minifyURL(article.url),
+                        link: await minifyURL(article.url), // Url minificado, pois alguns podem entrar em conflito com o messenger.
                         theme: theme
                     })
                 }
@@ -206,6 +210,28 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
             return "";
         }
     }
-
+    /**
+     * Deleta urls minificados previamente pelo rebrandly
+     */
+    async function deleteAll(){
+        var running = true;
+    
+        while(running){
+            console.log(running);
+            let links_raw = await fetch("https://api.rebrandly.com/v1/links?apikey="+functions.config().rebrandly.key)
+            let links = await links_raw.json();
+            if (links.length == 0){
+                running = false;
+            }
+            else{
+                for (link of links){
+                    console.log(link.id);
+                    await fetch("https://api.rebrandly.com/v1/links/" + link.id + "?apikey="+functions.config().rebrandly.key, {
+                        method: "delete"
+                    })
+                }  
+            }  
+        }
+    }
     return null;
 });
