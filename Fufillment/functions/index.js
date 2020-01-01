@@ -210,6 +210,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
             return "";
         }
     }
+    
     /**
      * Deleta urls minificados previamente pelo rebrandly
      */
@@ -224,7 +225,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
                 running = false;
             }
             else{
-                for (link of links){
+                for (let link of links){
                     console.log(link.id);
                     await fetch("https://api.rebrandly.com/v1/links/" + link.id + "?apikey="+functions.config().rebrandly.key, {
                         method: "delete"
