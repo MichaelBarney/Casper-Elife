@@ -140,7 +140,7 @@ exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
         var result = [];
 
         // Primeiro, remover os links que foram minificados previamente
-        deleteAll()
+        await deleteAll()
 
         // Em seguida, preencher 'result' com objetos representando as notícias
         for (let theme of themes){
