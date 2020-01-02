@@ -45,11 +45,13 @@ async function myFunc(){
 
                     var imageUrl = article.urlToImage
    
-                    let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
-                    let size = dimensions.width * dimensions.height;
-                    console.log(size);
-                    if (size > 1000000){
-                        imageUrl = ""
+                    if (imageUrl){
+                        let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
+                        let size = dimensions.width * dimensions.height;
+                        console.log(size);
+                        if (size > 1000000){
+                            imageUrl = ""
+                        }
                     }
 
                     result.push({
