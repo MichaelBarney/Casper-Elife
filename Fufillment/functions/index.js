@@ -12,8 +12,6 @@ const MongoClient = require('mongodb').MongoClient;
 var fetch = require("node-fetch");
 var probe = require('probe-image-size');
 process.env.DEBUG = 'dialogflow:debug';
- 
-
 
 /**
  *  Firebase Funcion
@@ -44,6 +42,13 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         // Montar o Carrousel de Notícias
         if (newsGroup.length > 0 ){
             for (let news of newsGroup){
+
+                console.log("mounding card:")
+                console.log(news.title)
+                console.log(news.description)
+                console.log(news.imageUrl)
+                console.log(news.link)
+                
                 agent.add(new Card({
                     title: news.title,
                     imageUrl: news.imageUrl,
@@ -101,272 +106,144 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
  *  Chamada diariamente às 00:01
  *  Preenche o banco de dados com notícias coletadas de uma API extrarna. 
 */
+
 exports.newsUpdate = functions.pubsub.schedule('1 0 * * *')
     .timeZone('America/Sao_Paulo')
     .onRun(async () => {  
 
-    const client = await MongoClient.connect(functions.config().mongodb.uri, { useNewUrlParser: true })
-    .catch(err => { console.log(err); });
-
-    if (!client) {
-        return null;
-    }
-    try {
-        const db = client.db("casper");
-        let collection = db.collection('news');
-
-        // Primeiro, remover os links que foram minificados previamente
-        await deleteAll()
-
-        //Coletar notícias
-        let allNews = await getAllNews()
-
-        //Limpar a coleção
-        collection.deleteMany({})
-
-        // Preencher as notícias
-        collection.insertMany(allNews)
-
-    } catch (err) {
-        console.log(err);
-    } finally {
-        client.close();
-    }
-
-    /**
-     * Coleta 10 notícias de cada tema através da NewsAPI
-     * Retorna um array com objetos representando as notícias.
-     */
-    async function getAllNews(){
-        const themes = ["esportes", "entretenimento", "famosos", "política"];
-
-        var result = [];
-
-        // Em seguida, preencher 'result' com objetos representando as notícias
-        for (let theme of themes){
-            const news = await getNews(theme)
-            
-            for (let i in  news.articles){
-                if(i < 10){
-                    let article = news.articles[i];
-
-                    var imageUrl = article.urlToImage
-   
-                    // Imagens grandes travam o messenger, então é ncesessário verificar seu tamanho antes de adicionála.
-                    if (imageUrl){
-                        let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
-                        let size = dimensions.width * dimensions.height;
-                        console.log(size);
-                        if (size > 1000000){
-                            imageUrl = ""
+        const client = await MongoClient.connect(functions.config().mongodb.uri, { useNewUrlParser: true })
+        .catch(err => { console.log(err); });
+    
+        if (!client) {
+            return null;
+        }
+        try {
+            const db = client.db("casper");
+            let collection = db.collection('news');
+    
+            // Primeiro, remover os links que foram minificados previamente
+            console.log("Delete Entries")
+            await deleteAll()
+    
+            //Coletar notícias
+            console.log("Collect News")
+            let allNews = await getAllNews()
+    
+            //Limpar a coleção
+            console.log("Clean Database")
+            await collection.deleteMany({})
+    
+            // Preencher as notícias
+            console.log("Fill Database")
+            collection.insertMany(allNews)
+    
+        } catch (err) {
+            console.log(err);
+        } finally {
+            client.close();
+        }
+    
+        /**
+         * Coleta 10 notícias de cada tema através da NewsAPI
+         * Retorna um array com objetos representando as notícias.
+         */
+        async function getAllNews(){
+            const themes = ["esportes", "entretenimento", "famosos", "política"];
+    
+            var result = [];
+    
+            // Em seguida, preencher 'result' com objetos representando as notícias
+            for (let theme of themes){
+                console.log("Theme: " + theme)
+                const news = await getNews(theme)
+                
+                for (let i in  news.articles){
+                    if(i < 10){
+                        let article = news.articles[i];
+                        console.log("Article: " + article.title);
+    
+                        var imageUrl = article.urlToImage
+                        // Imagens grandes travam o messenger, então é ncesessário verificar seu tamanho antes de adicionála.
+                        if (imageUrl){
+                            let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
+                            let size = dimensions.width * dimensions.height;
+                            console.log("size: " + size);
+                            if (size > 1000000){
+                                imageUrl = ""
+                            }
                         }
+    
+                        result.push({
+                            title: article.title,
+                            imageUrl: imageUrl,
+                            description: article.description,
+                            link: await minifyURL(article.url), // Url minificado, pois alguns podem entrar em conflito com o messenger.
+                            theme: theme
+                        })
                     }
-
-                    result.push({
-                        title: article.title,
-                        imageUrl: imageUrl,
-                        description: article.description,
-                        link: await minifyURL(article.url), // Url minificado, pois alguns podem entrar em conflito com o messenger.
-                        theme: theme
-                    })
+                    else{
+                        break;
+                    }
+                }
+            }
+    
+            return result;
+        }
+    
+        /**
+         * Requere à NewsAPI notícias em português do tema específicado.
+         * Retorna um objeto com as informações da notícia.
+         * @param {String} theme  - O tema da notícia à ser pesquisada.
+         */
+        async function getNews(theme){
+            var url = "https://newsapi.org/v2/everything?q="+theme.replace("í","i")+"&sortBy=publishedAt&language=pt&apiKey=" + functions.config().newsapi.key;
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+                return json;
+            } catch (error) {
+                return {};
+            }
+        }
+    
+        /**
+         * Minifica urls através da API da Rebrangly
+         * Returna o url minificado.
+         * @param {String} longURL 
+         * @returns {String}
+         */
+        async function minifyURL(longURL){
+            let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey="+functions.config().rebrandly.key;
+            try {
+                const response = await fetch(queryURL);
+                const json = await response.json();
+                return "http://www."+json.shortURL;
+            } catch (error) {
+                console.log(error)
+                return "https://www.google.com/";
+            }
+        }
+        
+        /**
+         * Deleta urls minificados previamente pelo rebrandly
+         */
+        async function deleteAll(){
+            var running = true;
+        
+            while(running){
+                let links_raw = await fetch("https://api.rebrandly.com/v1/links?apikey="+functions.config().rebrandly.key)
+                let links = await links_raw.json();
+                if (links.length == 0){
+                    running = false;
                 }
                 else{
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Requere à NewsAPI notícias em português do tema específicado.
-     * Retorna um objeto com as informações da notícia.
-     * @param {String} theme  - O tema da notícia à ser pesquisada.
-     */
-    async function getNews(theme){
-        var url = "https://newsapi.org/v2/everything?q="+theme.replace("í","i")+"&sortBy=publishedAt&language=pt&apiKey=" + functions.config().newsapi.key;
-        try {
-            const response = await fetch(url);
-            const json = await response.json();
-            return json;
-        } catch (error) {
-            return {};
-        }
-    }
-
-    /**
-     * Minifica urls através da API da Rebrangly
-     * Returna o url minificado.
-     * @param {String} longURL 
-     * @returns {String}
-     */
-    async function minifyURL(longURL){
-        let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey="+functions.config().rebrandly.key;
-        try {
-            const response = await fetch(queryURL);
-            const json = await response.json();
-            return "http://www."+json.shortURL;
-        } catch (error) {
-            console.log(error)
-            return "";
-        }
-    }
-    
-    /**
-     * Deleta urls minificados previamente pelo rebrandly
-     */
-    async function deleteAll(){
-        var running = true;
-    
-        while(running){
-            let links_raw = await fetch("https://api.rebrandly.com/v1/links?apikey="+functions.config().rebrandly.key)
-            let links = await links_raw.json();
-            if (links.length == 0){
-                running = false;
-            }
-            else{
-                for (let link of links){
-                    await fetch("https://api.rebrandly.com/v1/links/" + link.id + "?apikey="+functions.config().rebrandly.key, {
-                        method: "delete"
-                    })
+                    for (let link of links){
+                        await fetch("https://api.rebrandly.com/v1/links/" + link.id + "?apikey="+functions.config().rebrandly.key, {
+                            method: "delete"
+                        })
+                    }  
                 }  
-            }  
+            }
         }
-    }
-    return null;
+        return null;
 });
-
-
-exports.updateTest = functions.https.onRequest(async (request, response) => {
-    const client = await MongoClient.connect(functions.config().mongodb.uri, { useNewUrlParser: true })
-    .catch(err => { console.log(err); });
-
-    if (!client) {
-        return null;
-    }
-    try {
-        const db = client.db("casper");
-        let collection = db.collection('news');
-
-        // Primeiro, remover os links que foram minificados previamente
-        await deleteAll()
-
-        //Coletar notícias
-        let allNews = await getAllNews()
-
-        //Limpar a coleção
-        collection.deleteMany({})
-
-        // Preencher as notícias
-        collection.insertMany(allNews)
-
-    } catch (err) {
-        console.log(err);
-    } finally {
-        client.close();
-    }
-
-    /**
-     * Coleta 10 notícias de cada tema através da NewsAPI
-     * Retorna um array com objetos representando as notícias.
-     */
-    async function getAllNews(){
-        const themes = ["esportes", "entretenimento", "famosos", "política"];
-
-        var result = [];
-
-        // Em seguida, preencher 'result' com objetos representando as notícias
-        for (let theme of themes){
-            const news = await getNews(theme)
-            
-            for (let i in  news.articles){
-                if(i < 10){
-                    let article = news.articles[i];
-
-                    var imageUrl = article.urlToImage
-   
-                    // Imagens grandes travam o messenger, então é ncesessário verificar seu tamanho antes de adicionála.
-                    if (imageUrl){
-                        let dimensions = await probe(imageUrl, { timeout: 5000 }).catch(() => imageUrl = "");
-                        let size = dimensions.width * dimensions.height;
-                        console.log(size);
-                        if (size > 1000000){
-                            imageUrl = ""
-                        }
-                    }
-
-                    result.push({
-                        title: article.title,
-                        imageUrl: imageUrl,
-                        description: article.description,
-                        link: await minifyURL(article.url), // Url minificado, pois alguns podem entrar em conflito com o messenger.
-                        theme: theme
-                    })
-                }
-                else{
-                    break;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Requere à NewsAPI notícias em português do tema específicado.
-     * Retorna um objeto com as informações da notícia.
-     * @param {String} theme  - O tema da notícia à ser pesquisada.
-     */
-    async function getNews(theme){
-        var url = "https://newsapi.org/v2/everything?q="+theme.replace("í","i")+"&sortBy=publishedAt&language=pt&apiKey=" + functions.config().newsapi.key;
-        try {
-            const response = await fetch(url);
-            const json = await response.json();
-            return json;
-        } catch (error) {
-            return {};
-        }
-    }
-
-    /**
-     * Minifica urls através da API da Rebrangly
-     * Returna o url minificado.
-     * @param {String} longURL 
-     * @returns {String}
-     */
-    async function minifyURL(longURL){
-        let queryURL = "https://api.rebrandly.com/v1/links/new?destination="+longURL+"&apikey="+functions.config().rebrandly.key;
-        try {
-            const response = await fetch(queryURL);
-            const json = await response.json();
-            return "http://www."+json.shortURL;
-        } catch (error) {
-            console.log(error)
-            return "";
-        }
-    }
-    
-    /**
-     * Deleta urls minificados previamente pelo rebrandly
-     */
-    async function deleteAll(){
-        var running = true;
-    
-        while(running){
-            let links_raw = await fetch("https://api.rebrandly.com/v1/links?apikey="+functions.config().rebrandly.key)
-            let links = await links_raw.json();
-            if (links.length == 0){
-                running = false;
-            }
-            else{
-                for (let link of links){
-                    await fetch("https://api.rebrandly.com/v1/links/" + link.id + "?apikey="+functions.config().rebrandly.key, {
-                        method: "delete"
-                    })
-                }  
-            }  
-        }
-    }
-    return null;
-})

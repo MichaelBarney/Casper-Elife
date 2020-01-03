@@ -79,7 +79,7 @@ async function myFunc(){
             return "http://www."+json.shortURL;
         } catch (error) {
             console.log(error)
-            return "";
+            return "https://www.google.com/";
         }
     }
 
